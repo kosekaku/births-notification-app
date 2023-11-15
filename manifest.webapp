@@ -1,0 +1,23 @@
+{
+  "version": "0.1.0",
+  "name": "Births Notification App",
+  "description": "South Sudan births Notification app to generate certificate",
+  "appType": "APP",
+  "launch_path": "index.html",
+  "icons": {
+    "16": "android-icon-36x36.png",
+    "48": "android-icon-48x48.png",
+    "128": "apple-icon.png"
+  },
+  "developer": {
+    "name": "Kose",
+    "url": "https://hispsouthsudan.org"
+  },
+  "default_locale": "en",
+  "activities": {
+    "dhis": {
+      "href": "../../../"
+    }
+  },
+  "authorities": []
+}
