@@ -10,6 +10,8 @@
 
 # production
 /build
+# data local
+/src/data/data.ts
 
 # misc
 .DS_Store

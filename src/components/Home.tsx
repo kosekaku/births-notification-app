@@ -32,8 +32,17 @@ import {
   PADDING_ITEM,
   WIDTH_BOX,
 } from '../constants/stylesConstants';
+import Loader from './commons/Loader';
+import { useNavigate } from 'react-router';
+import { teiDataLocal } from '../data/data';
+import { useDataContext } from '../contexts/teiDataContext';
 
 const Home = () => {
+  // initizations
+  const navigate = useNavigate();
+  const { data: dataContext } = useDataContext();
+  console.log('CONTEXT', dataContext);
+  // states
   const [organisationUnit, setOrganisationUnit] =
     useState<OrganizationUnitsProps | null>(null);
   const [isOuSelected, setIsOuSelected] = useState(false);
@@ -41,7 +50,9 @@ const Home = () => {
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
   const [generateReport, setGenerateReport] = useState(false);
-  const [teiData, setTeiData] = useState<any[]>([]);
+  const [teiData, setTeiData] = useState<any[]>(
+    teiDataLocal.trackedEntityInstances
+  ); // TODO replace current state default with [] and update any[] types to trackedInstanceProps- current data is for testing purpose to reduce internet connections band width
 
   // TODO get OU, periods from user before making calls
   const { loading, error, data, refetch } = useData(
@@ -96,8 +107,13 @@ const Home = () => {
     setGenerateReport(true);
   };
 
-  if (loading) return <p>loading data</p>;
-  if (error) return <p>error </p>;
+  if (loading) return <Loader />;
+  if (error)
+    return (
+      <AlertBar permanent danger duration={100}>
+        Error! {error}
+      </AlertBar>
+    );
 
   // Attributes to show to the user lists
   let motherName: string,
@@ -105,9 +121,21 @@ const Home = () => {
     placeOfBirth: string,
     fullNames: string,
     natureOfBirth: string,
-    gender: string;
+    gender: string,
+    others: string; // undefind case
 
   let mapAttr = {} as any; // mapping helper object
+
+  const handleUserClick = ({
+    trackedEntityInstance, // used for prints confirmation
+    orgUnit,
+    attributes,
+  }: TrackedEntityInstanceProps) => {
+    navigate('/certificate', {
+      state: { trackedEntityInstance, orgUnit, attributes },
+    });
+  };
+
   return (
     <div>
       <div style={{ padding: PADDING_ITEM }}>
@@ -234,48 +262,62 @@ const Home = () => {
                 <DataTableColumnHeader>Nature of Birth</DataTableColumnHeader>
                 <DataTableColumnHeader>Gender</DataTableColumnHeader>
                 <DataTableColumnHeader>Place of Birth</DataTableColumnHeader>
+                <DataTableColumnHeader>Action</DataTableColumnHeader>
               </DataTableRow>
             </TableHead>
 
             <TableBody loading>
-              {teiData?.map(({ attributes }: TrackedEntityInstanceProps) => {
-                attributes?.map(({ displayName, value, attribute }) => {
-                  // map data to table
-                  mapAttr[displayName] = attribute; // create mapped object for displayname and attribute id
+              {teiData?.map(
+                ({ attributes }: TrackedEntityInstanceProps, index: number) => {
+                  attributes?.map(({ displayName, value, attribute }) => {
+                    // map data to table
+                    mapAttr[displayName] = attribute; // create mapped object for displayname and attribute id
 
-                  switch (attribute) {
-                    case TEI_ATTRIBUTES['Mother Name']:
-                      motherName = value;
-                      break;
-                    case TEI_ATTRIBUTES['Name of the Child']:
-                      fullNames = value;
-                      break;
-                    case TEI_ATTRIBUTES['Date of birth']:
-                      dateOfBirth = value;
-                      break;
-                    case TEI_ATTRIBUTES['Place of Birth']: // Place of Birth => TP7knQneHLj
-                      placeOfBirth = value;
-                      break;
-                    case TEI_ATTRIBUTES['Nature of Birth']:
-                      natureOfBirth = value;
-                      break;
-                    case TEI_ATTRIBUTES['Sex of the child ']:
-                      gender = value;
-                      break;
-                  }
-                });
-                // return table rows here
-                return (
-                  <DataTableRow>
-                    <DataTableCell>{fullNames}</DataTableCell>
-                    <DataTableCell>{motherName}</DataTableCell>
-                    <DataTableCell>{dateOfBirth}</DataTableCell>
-                    <DataTableCell>{natureOfBirth}</DataTableCell>
-                    <DataTableCell>{gender}</DataTableCell>
-                    <DataTableCell>{placeOfBirth}</DataTableCell>
-                  </DataTableRow>
-                );
-              })}
+                    switch (attribute) {
+                      case TEI_ATTRIBUTES['Mother Name']:
+                        motherName = value;
+                        break;
+                      case TEI_ATTRIBUTES['Name of the Child']:
+                        fullNames = value;
+                        break;
+                      case TEI_ATTRIBUTES['Date of birth']:
+                        dateOfBirth = value;
+                        break;
+                      case TEI_ATTRIBUTES['Place of Birth']: // Place of Birth => TP7knQneHLj
+                        placeOfBirth = value;
+                        break;
+                      case TEI_ATTRIBUTES['Nature of Birth']:
+                        natureOfBirth = value;
+                        break;
+                      case TEI_ATTRIBUTES['Sex of the child ']:
+                        gender = value;
+                        break;
+                      default:
+                        others = value;
+                    }
+                  });
+                  // return table rows here
+                  return (
+                    <DataTableRow>
+                      <DataTableCell>{fullNames}</DataTableCell>
+                      <DataTableCell>{motherName}</DataTableCell>
+                      <DataTableCell>{dateOfBirth}</DataTableCell>
+                      <DataTableCell>{natureOfBirth}</DataTableCell>
+                      <DataTableCell>{gender}</DataTableCell>
+                      <DataTableCell>{placeOfBirth}</DataTableCell>
+                      <DataTableCell>
+                        <Button
+                          secondary
+                          large
+                          onClick={() => handleUserClick(teiData[index])}
+                        >
+                          View
+                        </Button>
+                      </DataTableCell>
+                    </DataTableRow>
+                  );
+                }
+              )}
             </TableBody>
             <TableFoot>
               <DataTableRow>
