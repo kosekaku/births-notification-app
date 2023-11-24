@@ -1,27 +1,37 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router';
-import {
-  DataContextProvider,
-  useDataContext,
-} from '../../contexts/teiDataContext';
+import { useLocation } from 'react-router';
+import CertificateBio from './CertificateBio';
+import { attributesData } from '../../helpers/attributesData';
+import { TrackedEntityInstanceProps } from '../../types/trackedEntity';
+import { BioDataProps } from '../../types/bioAttributes';
 
 const MainCertificate = () => {
   const { state } = useLocation();
-  const { data: dataContext } = useDataContext();
-  console.log('CONTEXT', dataContext);
-  const [teiData, setTeiData] = useState([]);
+  
+  const [teiData, setTeiData] = useState<TrackedEntityInstanceProps>();
   useEffect(() => {
     if (state === null) {
-      return console.log('Data state is null, ', state);
-      // request data from api if TrackedInstance is valid
-      // load data and render them,
-      // print results
+      // Request data from api if TrackedInstance is valid
+      // Load data and render them,
+      // Print results
     }
     setTeiData(state);
-    //return console.log('Data state is present: proper routes, ', state);
   }, [state]);
-  console.log('Data state is present: proper routes, ', teiData);
-  return <div>main</div>;
+ 
+  if(teiData===undefined){
+    // do nothing or render loading screen or some message to users
+    
+  }else{
+    const {fullNames, motherName, dateOfBirth,placeOfBirth, natureOfBirth, gender, others}: BioDataProps = attributesData(teiData) as unknown as any
+  }
+  return (
+  <div>
+    <div>Certificate Header content  title and flag</div>
+    <CertificateBio data={teiData}/>
+    <div>Certificate Footer content- QRCODE</div>
+  </div>
+
+  )
 };
 
 export default MainCertificate;

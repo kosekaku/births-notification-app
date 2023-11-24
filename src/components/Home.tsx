@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   OrganisationUnitTree,
   Button,
@@ -19,7 +19,6 @@ import { dhisDates } from '../utils/dhisDates';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import { PeriodCalendar } from './Calendar';
-import { TEI_ATTRIBUTES } from '../constants/teiAttributes';
 import {
   OrganizationUnitsProps,
   TrackedEntityInstanceProps,
@@ -35,13 +34,12 @@ import {
 import Loader from './commons/Loader';
 import { useNavigate } from 'react-router';
 import { teiDataLocal } from '../data/data';
-import { useDataContext } from '../contexts/teiDataContext';
+import { attributesData } from '../helpers/attributesData';
 
 const Home = () => {
   // initizations
   const navigate = useNavigate();
-  const { data: dataContext } = useDataContext();
-  console.log('CONTEXT', dataContext);
+ 
   // states
   const [organisationUnit, setOrganisationUnit] =
     useState<OrganizationUnitsProps | null>(null);
@@ -50,8 +48,9 @@ const Home = () => {
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
   const [generateReport, setGenerateReport] = useState(false);
+
   const [teiData, setTeiData] = useState<any[]>(
-    teiDataLocal.trackedEntityInstances
+    teiDataLocal?.trackedEntityInstances || []
   ); // TODO replace current state default with [] and update any[] types to trackedInstanceProps- current data is for testing purpose to reduce internet connections band width
 
   // TODO get OU, periods from user before making calls
@@ -115,16 +114,7 @@ const Home = () => {
       </AlertBar>
     );
 
-  // Attributes to show to the user lists
-  let motherName: string,
-    dateOfBirth: string,
-    placeOfBirth: string,
-    fullNames: string,
-    natureOfBirth: string,
-    gender: string,
-    others: string; // undefind case
 
-  let mapAttr = {} as any; // mapping helper object
 
   const handleUserClick = ({
     trackedEntityInstance, // used for prints confirmation
@@ -268,34 +258,11 @@ const Home = () => {
 
             <TableBody loading>
               {teiData?.map(
-                ({ attributes }: TrackedEntityInstanceProps, index: number) => {
-                  attributes?.map(({ displayName, value, attribute }) => {
-                    // map data to table
-                    mapAttr[displayName] = attribute; // create mapped object for displayname and attribute id
-
-                    switch (attribute) {
-                      case TEI_ATTRIBUTES['Mother Name']:
-                        motherName = value;
-                        break;
-                      case TEI_ATTRIBUTES['Name of the Child']:
-                        fullNames = value;
-                        break;
-                      case TEI_ATTRIBUTES['Date of birth']:
-                        dateOfBirth = value;
-                        break;
-                      case TEI_ATTRIBUTES['Place of Birth']: // Place of Birth => TP7knQneHLj
-                        placeOfBirth = value;
-                        break;
-                      case TEI_ATTRIBUTES['Nature of Birth']:
-                        natureOfBirth = value;
-                        break;
-                      case TEI_ATTRIBUTES['Sex of the child ']:
-                        gender = value;
-                        break;
-                      default:
-                        others = value;
-                    }
-                  });
+                ({ attributes, orgUnit }: TrackedEntityInstanceProps, index: number) => {
+                  // Use Custom helper to get the individual attribute fiels like gender, age to display to the table row
+                  const data = {attributes, orgUnit} as TrackedEntityInstanceProps;
+                 // TODO fix any
+                  const {fullNames, motherName, dateOfBirth,placeOfBirth, natureOfBirth, gender, others}:any  = data!==undefined && attributesData(data)
                   // return table rows here
                   return (
                     <DataTableRow>
@@ -322,7 +289,7 @@ const Home = () => {
             <TableFoot>
               <DataTableRow>
                 <DataTableCell colSpan='4'>
-                  Footer content- paginations
+                  South Sudan Births Notification Certificate:  &copy;{ new Date().getFullYear()} .....Footer content- paginations
                 </DataTableCell>
               </DataTableRow>
             </TableFoot>

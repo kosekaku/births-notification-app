@@ -1,4 +1,4 @@
-interface AttributesProps {
+export interface AttributesProps {
   attribute: string;
   created: string;
   displayName: string;

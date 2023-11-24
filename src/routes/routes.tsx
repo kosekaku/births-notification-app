@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from '../App';
-import MainCertificate from '../components/certificate/main';
+import MainCertificate from '../components/certificate/Main';
 import { NotFound } from '../components/notfound';
 
 export const RoutesRoot = () => (

@@ -1,9 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import App from './App';
-import MainCertificate from './components/certificate/main';
-import { NotFound } from './components/notfound';
+import { BrowserRouter } from 'react-router-dom';
 import { DataContextProvider } from './contexts/teiDataContext';
 import './index.css';
 import reportWebVitals from './reportWebVitals';

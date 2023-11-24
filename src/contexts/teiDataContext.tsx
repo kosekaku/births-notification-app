@@ -5,30 +5,28 @@ import React, {
   useEffect,
   ReactNode,
 } from 'react';
+import { teiDataLocal } from '../data/data';
 
 interface DataContextProps {
   children: ReactNode;
 }
 
 interface DataContextValue {
-  data: any[]; // Replace any with the actual type of your data
+  data: any[];
   setData: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 const DataContext = createContext<DataContextValue | undefined>(undefined);
 
 const DataContextProvider: React.FC<DataContextProps> = ({ children }) => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<any[]>([teiDataLocal.trackedEntityInstances]);
 
   useEffect(() => {
     // Fetch data from API and set it
     // ...
 
     // For the sake of this example, initializing data with dummy values
-    setData([
-      { id: 1, name: 'Item 1' },
-      { id: 2, name: 'Item 2' },
-    ]);
+    // setData([]);
   }, []);
 
   const value: DataContextValue = { data, setData };
