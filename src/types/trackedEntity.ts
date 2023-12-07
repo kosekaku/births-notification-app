@@ -1,4 +1,4 @@
-interface AttributesProps {
+export interface AttributesProps {
   attribute: string;
   created: string;
   displayName: string;
@@ -8,7 +8,7 @@ interface AttributesProps {
 }
 export interface TrackedEntityInstanceProps {
   attributes: AttributesProps[];
-  trackedEntityInstance: string;
+  trackedEntityInstance?: string;
   orgUnit: string;
   enrollments: [];
 }

@@ -1,0 +1,248 @@
+/*1 container */
+
+.app-container {
+  margin: 10px 1vw;
+}
+
+.vaccine-card {
+  margin-top: 10px;
+  table-layout: fixed !important;
+  width: 100% !important;
+  word-wrap: break-word !important;
+  word-break: break-all !important;
+  margin-bottom: 0px !important;
+  background-color: #fff;
+  opacity: 0.9;
+}
+
+.top-border,
+.bottom-border {
+  background: repeating-linear-gradient(
+    to right,
+    #2f5df1,
+    #f6fa13,
+    #000000,
+    #f6fa13,
+    #4ea039
+  );
+  width: 10px !important;
+}
+.right-border,
+.left-border {
+  width: 100%;
+  margin: 0px;
+  background: linear-gradient(
+    to bottom,
+    #2f5df1 2px,
+    #f6fa13,
+    #000000,
+    #f6fa13,
+    #4ea039
+  );
+  height: 10px;
+}
+
+.blue-border {
+  border: 1px;
+  border-style: solid;
+  border-color: #0f47af;
+}
+
+.yellow-border {
+  border: 1px;
+  border-style: solid;
+  border-color: #fcdd09;
+}
+.black-border {
+  border: 1px;
+  border-style: solid;
+  border-color: #000000;
+}
+
+.red-border {
+  border: 1px;
+  border-style: solid;
+  border-color: #da121a;
+}
+.green-border {
+  border: 1px;
+  border-style: solid;
+  border-color: #078930;
+}
+.white-border {
+  border: 1px;
+  border-style: solid;
+  border-color: #ffffff;
+}
+
+@media print {
+  .login-form-container,
+  .action-buttons,
+  .dhis2-menu,
+  .menu-container {
+    visibility: hidden !important;
+    display: none !important;
+  }
+  .dhis2-menu {
+    margin-bottom: 0px;
+  }
+
+  .application-content {
+    margin-top: 0px;
+  }
+}
+
+/* 2 header */
+.vaccine-card-header-container {
+  padding: 10px;
+  text-align: center;
+  font-weight: bolder;
+}
+
+.icon {
+  width: 10rem;
+}
+
+.vaccine-card-herader-sub-container {
+  margin-top: 20px;
+}
+
+.vaccine-card-herader-note {
+  margin-top: 30px;
+  padding: 10px;
+  font-weight: lighter;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+
+h3 {
+  font-size: 1rem;
+}
+h2,
+h3 {
+  font-weight: bold;
+}
+
+@media print {
+  .vaccine-card-herader-sub-container {
+    margin-top: 10px !important;
+  }
+
+  .vaccine-card-herader-note {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .vaccine-card-herader-note {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+/* 3. bio info */
+.vaccine-card-bio-container {
+  margin-top: 50px;
+}
+.vaccine-card-bio-info {
+  font-size: 1.2rem;
+  text-align: left;
+  padding-right: 20px;
+  padding-left: 20px;
+  overflow-wrap: break-word;
+}
+.vaccine-card-bio-location {
+  text-align: center;
+  font-size: 1.2rem;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.horizontal-line {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.vaccine-card-bio-value {
+  font-size: 0.8rem;
+}
+
+.vaccine-card-bio-title {
+  font-weight: bold;
+}
+
+TableBody {
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+thead,
+TableBody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+th,
+td {
+  padding-left: 10px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  word-wrap: break-word;
+}
+
+th {
+  text-align: center;
+}
+
+table {
+  width: 100%;
+}
+
+/* 4. doses  combined inside the bio component*/
+.vaccine-card-dose-container {
+  margin-left: 10px;
+  margin-top: 50px;
+  margin-bottom: 10px;
+}
+
+.vaccine-card-dose-table-header {
+  background-color: #b1d0fe;
+  font-weight: bold;
+}
+
+.vaccine-card-dose-table-value {
+  font-size: 0.8rem;
+}
+
+.horizontal-line {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+tbody {
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+thead,
+tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+th,
+td {
+  padding-left: 10px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  word-wrap: break-word;
+}
+
+th {
+  text-align: center;
+}
+
+table {
+  width: 100%;
+}

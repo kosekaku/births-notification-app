@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0-alpha.05",
+  "name": "Birth Notification south Sudan",
+  "description": "Birth Notification  app for South Sudan",
+  "appType": "APP",
+  "launch_path": "index.html",
+  "icons": {
+    "16": "android-icon-36x36.png",
+    "48": "android-icon-48x48.png",
+    "128": "apple-icon.png"
+  },
+  "developer": {
+    "name": "HISP SS",
+    "url": "https://dev.southsudanhisorg"
+  },
+  "default_locale": "en",
+  "activities": {
+    "dhis": {
+      "href": "../../../"
+    }
+  },
+  "authorities": []
+}

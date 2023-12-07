@@ -1,15 +1,24 @@
+import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import { BrowserRouter } from 'react-router-dom';
+import { DataContextProvider } from './contexts/teiDataContext';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+import { RoutesRoot } from './routes/routes';
 // Set the app title
 document.title = 'Births Notification App';
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <DataContextProvider>
+        {/* Load all routes here */}
+        {RoutesRoot()}
+      </DataContextProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 

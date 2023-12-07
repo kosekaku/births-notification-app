@@ -1,16 +1,16 @@
-import { useDataQuery } from '@dhis2/app-runtime';
-import { dhisDates } from '../utils/dhisDates';
-import { OrganizationUnitsProps } from '../types/trackedEntity';
-import { ROOT_OU } from '../constants/organisationUnit';
-import { PROGRAM_ID } from '../constants/teiAttributes';
+import { useDataQuery } from "@dhis2/app-runtime";
+import { dhisDates } from "../utils/dhisDates";
+import { OrganizationUnitsProps } from "../types/trackedEntity";
+import { ROOT_OU } from "../constants/organisationUnit";
+import { PROGRAM_ID } from "../constants/teiAttributes";
 
 const PROGRAM_ATTRIBUTES_QUERY = {
   programs: {
-    resource: 'trackedEntityInstances',
+    resource: "trackedEntityInstances",
     params: ({ organisationUnit, startDate, endDate, programId }: any) => ({
       ou: organisationUnit,
-      ouMode: 'DESCENDANTS', //'SELECTED' or 'DESCENDANTS,
-      order: 'created:desc',
+      ouMode: "DESCENDANTS", //'SELECTED' or 'DESCENDANTS,
+      order: "created:desc",
       lastUpdatedStartDate: startDate,
       lastUpdatedEndDate: endDate,
       program: programId,
@@ -24,7 +24,7 @@ export const useData = (
   selectedStartDate: Date | null,
   selectedEndDate: Date | null
 ) => {
-  const { loading, error, data, refetch } = useDataQuery(
+  const { loading, error, data, page, totalPage, refetch } = useDataQuery(
     PROGRAM_ATTRIBUTES_QUERY,
     {
       variables: {
@@ -36,5 +36,6 @@ export const useData = (
       lazy: true,
     }
   ) as unknown as any; // Error due to OU being null
-  return { loading, error, data, refetch };
+
+  return { loading, error, data, page, totalPage, refetch };
 };
