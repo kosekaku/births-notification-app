@@ -4,8 +4,8 @@ import React, {
   useState,
   useEffect,
   ReactNode,
-} from 'react';
-import { teiDataLocal } from '../data/data';
+} from "react";
+import { teiDataLocal } from "../data/data";
 
 interface DataContextProps {
   children: ReactNode;
@@ -19,13 +19,14 @@ interface DataContextValue {
 const DataContext = createContext<DataContextValue | undefined>(undefined);
 
 const DataContextProvider: React.FC<DataContextProps> = ({ children }) => {
-  const [data, setData] = useState<any[]>([teiDataLocal.trackedEntityInstances]);
+  const [data, setData] = useState<any[]>([
+    teiDataLocal.trackedEntityInstances,
+  ]);
 
   useEffect(() => {
+    // TODO
     // Fetch data from API and set it
     // ...
-
-    // For the sake of this example, initializing data with dummy values
     // setData([]);
   }, []);
 
@@ -37,7 +38,7 @@ const DataContextProvider: React.FC<DataContextProps> = ({ children }) => {
 const useDataContext = (): DataContextValue => {
   const context = useContext(DataContext);
   if (!context) {
-    throw new Error('useDataContext must be used within a DataContextProvider');
+    throw new Error("useDataContext must be used within a DataContextProvider");
   }
   return context;
 };

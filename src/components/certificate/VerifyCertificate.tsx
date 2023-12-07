@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
-function VerifyCertificate() {
-  return (
-    <div>VerifyCertificate</div>
-  )
-}
+const VerifyCertificate = () => {
+  return <div>VerifyCertificate</div>;
+};
 
-export default VerifyCertificate
+export default VerifyCertificate;

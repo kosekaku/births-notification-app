@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   OrganisationUnitTree,
   Button,
@@ -13,33 +13,37 @@ import {
   TableFoot,
   Divider,
   Card,
-} from '@dhis2/ui';
-import ModalCard from './Modal';
-import { dhisDates } from '../utils/dhisDates';
-import 'react-date-picker/dist/DatePicker.css';
-import 'react-calendar/dist/Calendar.css';
-import { PeriodCalendar } from './Calendar';
+  InputField,
+} from "@dhis2/ui";
+import ModalCard from "./Modal";
+import { dhisDates } from "../utils/dhisDates";
+import "react-date-picker/dist/DatePicker.css";
+import "react-calendar/dist/Calendar.css";
+import { PeriodCalendar } from "./Calendar";
 import {
   OrganizationUnitsProps,
   TrackedEntityInstanceProps,
-} from '../types/trackedEntity';
-import { ROOT_OU } from '../constants/organisationUnit';
-import { useData } from '../hooks/useData';
+} from "../types/trackedEntity";
+import { ROOT_OU } from "../constants/organisationUnit";
+import { useData } from "../hooks/useData";
 import {
   FONT_SIZE_DEFAULT,
   HEIGHT_BOX,
   PADDING_ITEM,
   WIDTH_BOX,
-} from '../constants/stylesConstants';
-import Loader from './commons/Loader';
-import { useNavigate } from 'react-router';
-import { teiDataLocal } from '../data/data';
-import { attributesData } from '../helpers/attributesData';
+} from "../constants/stylesConstants";
+import Loader from "./commons/Loader";
+import { useNavigate } from "react-router";
+import { teiDataLocal } from "../data/data";
+import { attributesData } from "../helpers/attributesData";
+import Pagination from "./Paginations";
+import { PAGE_SIZE } from "../constants/common";
+import { paginationCalculation } from "../utils/paginations";
 
 const Home = () => {
   // initizations
   const navigate = useNavigate();
- 
+
   // states
   const [organisationUnit, setOrganisationUnit] =
     useState<OrganizationUnitsProps | null>(null);
@@ -52,13 +56,48 @@ const Home = () => {
   const [teiData, setTeiData] = useState<any[]>(
     teiDataLocal?.trackedEntityInstances || []
   ); // TODO replace current state default with [] and update any[] types to trackedInstanceProps- current data is for testing purpose to reduce internet connections band width
+  // filtered data
+  const [filteredData, setFilteredData] = useState<any[]>(teiData); // default not filtered data
+
+  // Search functionality
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Paginations starts...
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // pagination data
+  const {
+    currentPageItems: paginatedData,
+    totalItemsPages: totalPages,
+    totalItems: totalTeis,
+  } = paginationCalculation(filteredData, PAGE_SIZE, currentPage);
+
+  const handlePageChange = (newPage: number) => {
+    // If the user requests a page beyond the initially fetched data
+    // TODO FIX- when users finishes seeing the initial data, fetch the remaining data from server
+    if (newPage * PAGE_SIZE > totalTeis && paginatedData.length <= 1) {
+      // Fetch new data
+      refetch({
+        lastUpdatedEndDate: selectedEndDate,
+        organisationUnit: organisationUnit?.id || ROOT_OU,
+        startDate: dhisDates(selectedStartDate),
+        endDate: dhisDates(selectedEndDate),
+        page: newPage,
+      });
+    }
+
+    return setCurrentPage(newPage);
+  };
+  // Paginations ends...
 
   // TODO get OU, periods from user before making calls
   const { loading, error, data, refetch } = useData(
     organisationUnit,
     selectedStartDate,
     selectedEndDate
+    // currentPage
   );
+  const totalDataValues = 1000; // TODO get them from the APIs
   useEffect(() => {
     // Call refetch with the data(OU, period) from user selections
     if (generateReport !== false && organisationUnit !== null) {
@@ -102,7 +141,7 @@ const Home = () => {
   };
   const handleGenerateReport = () => {
     // Implement logic at useEffect to fetch data for the selected OU, period, and programs
-    // generate report initiated and generateReport state is checked at useEffect
+    // Generate report initiated and generateReport state is checked at useEffect
     setGenerateReport(true);
   };
 
@@ -110,52 +149,89 @@ const Home = () => {
   if (error)
     return (
       <AlertBar permanent danger duration={100}>
-        Error! {error}
+        {`Error! ${error?.message}`}
       </AlertBar>
     );
 
-
-
   const handleUserClick = ({
-    trackedEntityInstance, // used for prints confirmation
+    trackedEntityInstance, // Used for prints confirmation
     orgUnit,
     attributes,
   }: TrackedEntityInstanceProps) => {
-    navigate('/certificate', {
+    navigate("/certificate", {
       state: { trackedEntityInstance, orgUnit, attributes },
     });
+  };
+
+  const handleSearch = async ({ value }: any) => {
+    // TODO
+    // Implement logic for searching with DHIS2 event API based on searchTerm, orgUnit, and period
+    // Make an additional API call to retrieve data based on the search criteria or if previously fetched data is not found
+    // Update the filteredData state with the new search results
+
+    setSearchTerm(value);
+
+    const filteredData = teiData.filter(
+      ({ attributes, orgUnit }: TrackedEntityInstanceProps) => {
+        const data = { attributes, orgUnit } as TrackedEntityInstanceProps;
+
+        const {
+          fullNames,
+          motherName,
+          dateOfBirth,
+          placeOfBirth,
+          natureOfBirth,
+          gender,
+          others,
+        }: any = attributesData(data);
+        const searchableAttributes = [
+          fullNames,
+          motherName,
+          dateOfBirth,
+          placeOfBirth,
+          natureOfBirth,
+          gender,
+          others,
+        ];
+
+        // Check if any attribute contains the search term
+        return searchableAttributes.some((attribute) =>
+          attribute.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+    );
+    // update a state of filtered search data
+    setFilteredData(filteredData);
   };
 
   return (
     <div>
       <div style={{ padding: PADDING_ITEM }}>
-        <Box height={HEIGHT_BOX} padding={PADDING_ITEM} width='100%'>
+        <Box height={HEIGHT_BOX} padding={PADDING_ITEM} width="100%">
           <Card>
-            {/* <ButtonStrip> */}
             <Button
-              name='ouSelection'
+              name="ouSelection"
               onClick={() => setIsOuSelected(true)}
-              value='default'
+              value="default"
             >
               Organization Unit Selection
             </Button>
             <Button
-              name='periodSelection'
+              name="periodSelection"
               onClick={() => setIsPeriodSelected(true)}
-              value='default'
+              value="default"
             >
               Period
             </Button>
 
             <Button
-              name='generateReport'
+              name="generateReport"
               onClick={handleGenerateReport}
-              value='default'
+              value="default"
               //disabled
             >
               Generate Report
             </Button>
-            {/* </ButtonStrip> */}
           </Card>
         </Box>
         <Divider />
@@ -174,22 +250,22 @@ const Home = () => {
               <Card>
                 <div>
                   <span style={{ fontSize: FONT_SIZE_DEFAULT }}>
-                    Selected Organisation Unit:{' '}
+                    Selected Organisation Unit:{" "}
                   </span>
                   {organisationUnit
                     ? organisationUnit?.displayName
-                    : 'All/ South Sudan'}
+                    : "All/ South Sudan"}
                 </div>
                 <div>
                   <span style={{ fontSize: FONT_SIZE_DEFAULT }}>
-                    Selected Dates:{' '}
+                    Selected Dates:{" "}
                   </span>
 
                   {selectedStartDate && selectedEndDate
                     ? `${dhisDates(selectedStartDate)} to ${dhisDates(
                         selectedEndDate
                       )}`
-                    : 'All Period'}
+                    : "All Period"}
                 </div>
               </Card>
             </Box>
@@ -197,14 +273,35 @@ const Home = () => {
         }
 
         <Divider />
+        <div>
+          {/* Search input */}
+
+          <div style={{ display: "flex" }}>
+            <InputField
+              name="defaultName"
+              inputWidth="200%"
+              onChange={(e: any) => handleSearch(e)}
+              placeholder="Search child by name, mothername, fathername, date of birth, etc"
+              value={searchTerm}
+            />
+            {/* <Button
+              name="Small button"
+              onClick={handleSearch}
+              medium
+              value="default"
+            >
+              Seaerch
+            </Button> */}
+          </div>
+        </div>
 
         {/* Organization units modal */}
         {isOuSelected && (
           <ModalCard
-            title='Select Organization Units'
+            title="Select Organization Units"
             content={
               <OrganisationUnitTree
-                name='South Sudan'
+                name="South Sudan"
                 onChange={handleOrganizationUnit}
                 roots={ROOT_OU}
                 singleSelection={true}
@@ -218,7 +315,7 @@ const Home = () => {
 
         {isPeriod && (
           <ModalCard
-            title='Select Periods'
+            title="Select Periods"
             content={
               <div>
                 <PeriodCalendar
@@ -234,10 +331,15 @@ const Home = () => {
           />
         )}
         {/* Generate reports */}
-        {teiData.length <= 0 ? (
+        {totalTeis === 0 ? (
           <div style={{ padding: PADDING_ITEM, fontSize: FONT_SIZE_DEFAULT }}>
             <Box height={HEIGHT_BOX} width={WIDTH_BOX}>
-              <Card> There are no data available for current selection</Card>
+              <Card>
+                There are no data available for current selection
+                <Button small onClick={() => navigate(0)}>
+                  Go Back
+                </Button>
+              </Card>
             </Box>
 
             <Divider />
@@ -257,15 +359,28 @@ const Home = () => {
             </TableHead>
 
             <TableBody loading>
-              {teiData?.map(
-                ({ attributes, orgUnit }: TrackedEntityInstanceProps, index: number) => {
+              {paginatedData?.map(
+                (
+                  { attributes, orgUnit }: TrackedEntityInstanceProps,
+                  index: number
+                ) => {
                   // Use Custom helper to get the individual attribute fiels like gender, age to display to the table row
-                  const data = {attributes, orgUnit} as TrackedEntityInstanceProps;
-                 // TODO fix any
-                  const {fullNames, motherName, dateOfBirth,placeOfBirth, natureOfBirth, gender, others}:any  = data!==undefined && attributesData(data)
+                  const data = {
+                    attributes,
+                    orgUnit,
+                  } as TrackedEntityInstanceProps;
+                  // TODO fix any
+                  const {
+                    fullNames,
+                    motherName,
+                    dateOfBirth,
+                    placeOfBirth,
+                    natureOfBirth,
+                    gender,
+                  }: any = data !== undefined && attributesData(data);
                   // return table rows here
                   return (
-                    <DataTableRow>
+                    <DataTableRow key={fullNames + dateOfBirth + motherName}>
                       <DataTableCell>{fullNames}</DataTableCell>
                       <DataTableCell>{motherName}</DataTableCell>
                       <DataTableCell>{dateOfBirth}</DataTableCell>
@@ -287,11 +402,19 @@ const Home = () => {
               )}
             </TableBody>
             <TableFoot>
-              <DataTableRow>
-                <DataTableCell colSpan='4'>
-                  South Sudan Births Notification Certificate:  &copy;{ new Date().getFullYear()} .....Footer content- paginations
-                </DataTableCell>
-              </DataTableRow>
+              {totalTeis > PAGE_SIZE && (
+                <DataTableRow>
+                  <DataTableCell colSpan="7">
+                    {/* South Sudan Births Notification Certificate:  &copy;{ new Date().getFullYear()} .....Footer content- paginations */}
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalDataValues={totalDataValues}
+                      onPageChange={handlePageChange}
+                    />
+                  </DataTableCell>
+                </DataTableRow>
+              )}
             </TableFoot>
           </DataTable>
         )}
