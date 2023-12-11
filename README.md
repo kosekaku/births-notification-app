@@ -2,7 +2,7 @@
 
 A React based DHIS2 births notification application that fetches data from DHIS2 instance's tracker program and generate a births certificate .
 
-## App Demo new Repo [link]()
+## App Demo new Repo [link](https://github.com/kosekaku/South-Sudan-Births-Notification-Certificate)
 
 This app built using Typescript and DHIS2 app runtime has been move to a new Javascript focused app using DHIS2 app platform with vanila Javascript due to DHIS2 authenication issues with app runtime when using the organization unit components, and data queries components like useDataQuery, useDataMutation, etc
 
